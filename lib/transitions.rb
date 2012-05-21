@@ -34,30 +34,23 @@ module Transitions
   module ClassMethods
     def inherited(klass)
       super # Make sure we call other callbacks possibly defined upstream the ancestor chain.
-      klass.state_machines = state_machines
-    end
-
-    def state_machines
-      @state_machines ||= {}
+      klass.state_machine = state_machine
     end
 
     # The only reason we need this method is for the inherited callback.
-    def state_machines=(value)
-      @state_machines = value ? value.dup : nil
+    def state_machine=(value)
+      @state_machine = value.dup
     end
 
-    def state_machine(name = nil, options = {}, &block)
-      if name.is_a?(Hash)
-        options = name
-        name    = nil
-      end
-      name ||= :default
-      state_machines[name] ||= Machine.new(self, name)
-      block ? state_machines[name].update(options, &block) : state_machines[name]
+    def state_machine(options = {}, &block)
+      @state_machine = Machine.new self
+      block ? @state_machine.update(options, &block) : @state_machine
     end
 
-    def available_states(name = :default)
-      state_machines[name].states.map(&:name).sort_by {|x| x.to_s}
+    def get_state_machine; @state_machine; end
+
+    def available_states
+      @state_machine.states.map(&:name).sort_by {|x| x.to_s}
     end
 
     # TODO This method does not belong here but in `State`.

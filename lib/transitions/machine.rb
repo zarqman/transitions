@@ -26,8 +26,8 @@ module Transitions
     attr_accessor :states, :events, :state_index
     attr_reader :klass, :name, :auto_scopes
 
-    def initialize(klass, name, options = {}, &block)
-      @klass, @name, @states, @state_index, @events = klass, name, [], {}, {}
+    def initialize(klass, options = {}, &block)
+      @klass, @states, @state_index, @events = klass, [], {}, {}
       update(options, &block)
     end
 
