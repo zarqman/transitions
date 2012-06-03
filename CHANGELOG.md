@@ -24,6 +24,11 @@ Here is the reasoning:
 On the plus side, removing the possibility of having multiple state machines will streamline and improve existing
 code a lot.
 
+# 0.0.18 (2012-05-18)
+
+* (troessner) Remove `define_state_query_method` from public API
+* (troessner) Do not override existing methods when defining state query methods but warn the user.
+
 # 0.0.17 (2012-05-02):
 
 * (zmillman) Add write_state_without_persistence.
