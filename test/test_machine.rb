@@ -3,7 +3,10 @@ require "helper"
 class MachineTestSubject
   include Transitions
 
-  state_machine :initial => :foo do
+  state_machine :initial => :closed do
+    state :open
+    state :closed
+
     event :shutdown do
       transitions :from => :open, :to => :closed
     end
@@ -16,10 +19,10 @@ end
 
 class TransitionsMachineTest < Test::Unit::TestCase
   test "sets #initial_state from :initial option" do
-    assert_equal :bar, MachineTestSubject.get_state_machine.initial_state
+    assert_equal :closed, MachineTestSubject.get_state_machine.initial_state
   end
 
-  test "accesses non-default state machine" do
+  test "`get_state_machine` returns Transitions::Machine" do
     assert_kind_of Transitions::Machine, MachineTestSubject.get_state_machine
   end
 
