@@ -24,7 +24,7 @@ module Transitions
   class Machine
     attr_writer :initial_state
     attr_accessor :states, :events, :state_index
-    attr_reader :klass, :name, :auto_scopes
+    attr_reader :klass, :auto_scopes
 
     def initialize(klass, options = {}, &block)
       @klass, @states, @state_index, @events = klass, [], {}, {}
@@ -44,7 +44,7 @@ module Transitions
     end
 
     def fire_event(event, record, persist, *args)
-      state_index[record.current_state(@name)].call_action(:exit, record)
+      state_index[record.current_state].call_action(:exit, record)
       begin
         if new_state = @events[event].fire(record, nil, *args)
           state_index[new_state].call_action(:enter, record)
@@ -53,7 +53,7 @@ module Transitions
             record.send(event_fired_callback, record.current_state, new_state, event)
           end
 
-          record.current_state(@name, new_state, persist)
+          record.current_state(new_state, persist)
           @events[event].success.call(record) if @events[event].success
           return true
         else
@@ -80,7 +80,7 @@ module Transitions
     end
 
     def current_state_variable
-      "@#{@name}_current_state"
+      "@current_state"
     end
 
     private

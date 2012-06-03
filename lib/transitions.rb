@@ -58,10 +58,10 @@ module Transitions
   end
 
   # TODO Do we need this method really? Also, it's not a beauty, refactor at least.
-  def current_state(name = nil, new_state = nil, persist = false)
-    sm   = self.class.state_machine(name)
+  def current_state(new_state = nil, persist = false)
+    sm   = self.class.get_state_machine
     ivar = sm.current_state_variable
-    if name && new_state
+    if new_state
       if persist && respond_to?(:write_state)
         write_state(sm, new_state)
       end
