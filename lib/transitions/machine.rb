@@ -49,20 +49,20 @@ module Transitions
         if new_state = @events[event].fire(record, nil, *args)
           state_index[new_state].call_action(:enter, record)
 
-          if record.respond_to?(event_fired_callback)
-            record.send(event_fired_callback, record.current_state, new_state, event)
+          if record.respond_to?(:event_fired)
+            record.send(:event_fired, record.current_state, new_state, event)
           end
 
           record.current_state(new_state, persist)
           @events[event].success.call(record) if @events[event].success
           return true
         else
-          record.send(event_fired_callback, event) if record.respond_to?(event_failed_callback)
+          record.send(:event_failed, event) if record.respond_to?(:event_failed)
           return false
         end
       rescue => e
-        if record.respond_to?(event_failed_callback)
-          record.send(event_failed_callback, event)
+        if record.respond_to?(:event_failed)
+          record.send(:event_failed, event)
           return false
         else
           raise e
@@ -91,14 +91,6 @@ module Transitions
 
     def event(name, options = {}, &block)
       (@events[name] ||= Event.new(self, name)).update(options, &block)
-    end
-
-    def event_fired_callback
-      @event_fired_callback ||= (@name == :default ? '' : "#{@name}_") + 'event_fired'
-    end
-
-    def event_failed_callback
-      @event_failed_callback ||= (@name == :default ? '' : "#{@name}_") + 'event_failed'
     end
 
     def include_scopes
