@@ -42,7 +42,7 @@ module Transitions
     end
 
     def state_machine(options = {}, &block)
-      @state_machine = Machine.new self
+      @state_machine ||= Machine.new self
       block ? @state_machine.update(options, &block) : @state_machine
     end
 
@@ -63,11 +63,11 @@ module Transitions
     ivar = sm.current_state_variable
     if new_state
       if persist && respond_to?(:write_state)
-        write_state(sm, new_state)
+        write_state(new_state)
       end
 
       if respond_to?(:write_state_without_persistence)
-        write_state_without_persistence(sm, new_state)
+        write_state_without_persistence(new_state)
       end
 
       instance_variable_set(ivar, new_state)
@@ -77,7 +77,7 @@ module Transitions
       return value if value
 
       if respond_to?(:read_state)
-        value = instance_variable_set(ivar, read_state(sm))
+        value = instance_variable_set(ivar, read_state)
       end
 
       value || sm.initial_state

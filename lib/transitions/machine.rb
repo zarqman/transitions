@@ -86,7 +86,12 @@ module Transitions
     private
 
     def state(name, options = {})
-      @states << (state_index[name] ||= State.new(name, :machine => self)).update(options)
+      unless @state_index.key? name # Just ignore duplicates
+        state = State.new(name, :machine => self)
+        state.update options
+        @state_index[name] = state
+        @states << state
+      end
     end
 
     def event(name, options = {}, &block)
