@@ -28,7 +28,13 @@ module Transitions
       @machine, @name, @transitions = machine, name, []
       if machine
         machine.klass.send(:define_method, "#{name}!") do |*args|
-          machine.fire_event(name, self, true, *args)
+          if respond_to?(:transaction)
+            transaction do
+              machine.fire_event(name, self, true, *args)
+            end
+          else
+            machine.fire_event(name, self, true, *args)
+          end
         end
 
         machine.klass.send(:define_method, name.to_s) do |*args|
