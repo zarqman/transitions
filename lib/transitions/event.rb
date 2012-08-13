@@ -53,6 +53,8 @@ module Transitions
           next_state = to_state || Array(transition.to).first
           transition.execute(obj, *args)
           break
+        else
+          raise InvalidTransition, error_message_for_invalid_transitions(obj, to_state)
         end
       end
       # Update timestamps on obj if a timestamp has been defined
